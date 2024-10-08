@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Log File</title>
+</head>
+<body>
+{% if request.user.is_authenticated %}
+{% if message %}
+<p>{{ message }}</p>
+{% endif %}
+
+<p>Current Log File Size: {{ current_file_size }} bytes</p>
+
+<form method="post" action="{% url 'delete_log' %}">
+    {% csrf_token %}
+    <input type="submit" value="Delete Log File">
+</form>
+
+{% else %}
+<meta http-equiv="Refresh" content="0; url='/'" />
+{% endif %}
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign 2</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .menu {
+            margin-top: 20px;
+        }
+        .button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            margin-top: 20px;
+            color: #666;
+        }
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+{% if request.user.is_authenticated %}
+<div class="container">
+    <h1 class="title">警示牌系統</h1>
+    <h2>{{Account}}，你好</h2>
+    <br>
+    <div class="menu">
+        <a class="button" href="/djangoadmin/">系統管理</a>
+        <a class="button" href="/logout/">會員登出</a>
+    </div>
+    <br>
+    <br>
+    <div class="actions">
+        {%if output_status%}
+        <button class="button" onclick="location.href='/output2/'">模擬接收(Debug)</button>
+        {%else%}
+        <button class="button" onclick="location.href='/input2/'">啟用立牌</button>
+        {%endif%}
+        <button class="button" onclick="location.href='/access-records/'">檢視Log</button>
+    </div>
+    <div class="status">
+        {%if output_status%}
+        <p>伺服器狀態:待接收</p>
+        {%else%}
+        <p>伺服器狀態: 無請求</p>
+        {%endif%}
+
+        {%if arduino_online%}
+        <p>Arduino狀態:在線</p>
+        <p>Arduino電量:{{arduino_battery_num}}</p>
+        <p>Arduino電池溫度:{{arduino_battery_tem}}</p>
+
+        {%if waringsign_status%}
+        <p>立牌狀態:開啟</p>
+        <input type="button" value="改為關閉(Debug)" onclick="location.href='/arduino_info2?url_waringsign_status=2'">
+        <br>
+        <br>
+        {%if output_off_status%}
+        <input type="button" value="模擬收回(Debug)" onclick="location.href='/output2/off'">
+        {%else%}
+        <input type="button" value="收回立牌" onclick="location.href='/input2/off'">
+        {%endif%}
+        {%else%}
+        <p>立牌狀態:關閉</p>
+        <input type="button" value="改為開啟(Debug)" onclick="location.href='/arduino_info2?url_waringsign_status=1'">
+        {%endif%}
+        <br>
+
+        {%if arduino_status_UltraSound%}
+        <p>超聲波:正常</p>
+        <input type="button" value="改為異常(Debug)" onclick="location.href='/arduino_info2?url_UltraSound=2'">
+        <br>
+        <br>
+        {%else%}
+        <p>超聲波:異常</p>
+        <input type="button" value="改為正常(Debug)" onclick="location.href='/arduino_info2?url_UltraSound=1'">
+        <br>
+        <br>
+        {%endif%}
+
+        {%else%}
+        <p>Arduino狀態: 離線</p>
+        {%endif%}
+    </div>
+    <button class="button" onclick="location.href='/';">返回選單</button>
+</div>
+{% else %}
+<meta http-equiv="Refresh" content="0; url='/'" />
+{% endif %}
+</body>
+</html>

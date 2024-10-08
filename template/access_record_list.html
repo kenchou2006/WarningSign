@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Record List</title>
+</head>
+<body>
+<h1>Access Record List</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Access Time</th>
+        <th>IP Address</th>
+        <th>URLs</th>
+        <th>OS Name</th>
+        <th>OS Version</th>
+        <th>Browser Name</th>
+        <th>Browser Version</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for record in access_records %}
+    <tr>
+        <td>{{ record.access_time }}</td>
+        <td>{{ record.ip_address }}</td>
+        <td>{{ record.urls }}</td>
+        <td>{{ record.os_name }}</td>
+        <td>{{ record.os_version }}</td>
+        <td>{{ record.browser_name }}</td>
+        <td>{{ record.browser_version }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+<form action="{% url 'clear_access_records' %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Clear All Records">
+</form>
+</body>
+</html>

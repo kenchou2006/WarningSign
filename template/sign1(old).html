@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign 1</title>
+</head>
+<body>
+
+    {% if request.user.is_authenticated %}
+        <p>{{Account}}，你好</p>
+        <a href="/djangoadmin/">系統管理</a>
+        <a href="/logout/">會員登出</a>
+        <br>
+        <br>
+
+        {%if output_status%}
+            <input type="button" value="模擬接收(Debug)" onclick="location.href='/output/'">
+        {%else%}
+            <input type="button" value="啟用立牌" onclick="location.href='/input/'">
+        {%endif%}
+
+            <input type="button" value="下載Log" onclick="location.href='/download_log/'">
+        <br>
+
+        {%if output_status%}
+            <p>伺服器狀態:待接收</p>
+        {%else%}
+            <p>伺服器狀態:無請求</p>
+        {%endif%}
+
+        {%if arduino_online%}
+        <p>Arduino狀態:在線</p>
+        <p>Arduino電量:{{arduino_battery_num}}</p>
+        <p>Arduino電池溫度:{{arduino_battery_tem}}</p>
+
+            {%if waringsign_status%}
+                <p>立牌狀態:開啟</p>
+                <input type="button" value="改為關閉(Debug)" onclick="location.href='/arduino_info?url_waringsign_status=2'">
+                <br>
+                <br>
+                {%if output_off_status%}
+                <input type="button" value="模擬收回(Debug)" onclick="location.href='/output/off'">
+                {%else%}
+                <input type="button" value="收回立牌" onclick="location.href='/input/off'">
+                {%endif%}
+            {%else%}
+                <p>立牌狀態:關閉</p>
+                <input type="button" value="改為開啟(Debug)" onclick="location.href='/arduino_info?url_waringsign_status=1'">
+            {%endif%}
+            <br>
+
+            {%if arduino_status_UltraSound%}
+                <p>超聲波:正常</p>
+                <input type="button" value="改為異常(Debug)" onclick="location.href='/arduino_info?url_UltraSound=2'">
+                <br>
+                <br>
+            {%else%}
+                <p>超聲波:異常</p>
+                <input type="button" value="改為正常(Debug)" onclick="location.href='/arduino_info?url_UltraSound=1'">
+                <br>
+                <br>
+            {%endif%}
+
+        {%else%}
+        <p>Arduino狀態:離線</p>
+        {%endif%}
+
+    <input type="button" value="返回選單" onclick="location.href='/'">
+    {% else %}
+        <meta http-equiv="Refresh" content="0; url='/'" />
+    {% endif %}
+</body>
+</html>

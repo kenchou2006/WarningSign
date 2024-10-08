@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Info</title>
+</head>
+<body>
+        {% if request.user.is_authenticated %}
+        <h1>System Information</h1>
+        <p>Host Name:{{host_name}}</p>
+        <p>Operating System:{{os_name}}{{os_version}}</p>
+        <p>Processor:{{processor}}</p>
+        <p>Current Directory:{{current_directory}}</p>
+        <p>Total RAM:{{total_ram}} bytes</p>
+        <p>Internal IPv4:{{internal_ipv4}}</p>
+        <br>
+        <p>Prepare Server</p>
+        <p>sudo nano /etc/rc.local</p>
+        <p>sudo chmod a+x /etc/rc.local</p>
+        <p>Another in https://github.com/kenchou2006/WarningSign</p>
+        {% else %}
+        <meta http-equiv="Refresh" content="0; url='/'" />
+        {%endif%}
+</body>
+</html>

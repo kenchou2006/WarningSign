@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WarningSign Server</title>
+</head>
+<body>
+{% if request.user.is_authenticated %}
+<p>{{ Account }}，你好</p>
+<a href="/djangoadmin/">系統管理</a>
+<a href="/logout/">會員登出</a>
+<br>
+<br>
+<input type="button" value="警示牌 1" onclick="location.href='/sign1/'">
+<input type="button" value="警示牌 2" onclick="location.href='/sign2/'">
+<br>
+<br>
+{% if log_file_exists %}
+<input type="button" value="清除紀錄" onclick="location.href='/delete-log/'">
+{% endif %}
+{% else %}
+<b>未登入</b><a href="/login/">會員登入</a>
+{% endif %}
+</body>
+</html>
