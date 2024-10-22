@@ -10,6 +10,7 @@ cycler
 distlib
 Django
 django-security
+django-sslserver
 django-user-agents
 et-xmlfile
 exceptiongroup
@@ -31,3 +32,4 @@ wheel
 psycopg2-binary
 whitenoise
 python-dotenv
+gunicorn
