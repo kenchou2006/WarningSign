@@ -185,6 +185,7 @@ def output_page(request):
 def output_off_page(request):
     global output_off_status, input_off_visited,request_url
     request_url = "outputOff"
+    cache.set('output_visited', True, 30)
     if input_off_visited:
         output_off_status=True
         input_off_visited=False
@@ -301,6 +302,7 @@ def output_page2(request):
 def output_off_page2(request):
     global output_off_status2, input_off_visited2,request_url
     request_url = "outputOff2"
+    cache.set('output_visited2', True, 30)
     if input_off_visited2:
         output_off_status2=True
         input_off_visited2=False
