@@ -23,6 +23,10 @@ waringsign_status=2
 arduino_status_UltraSound=1
 arduino_battery_num=0
 arduino_battery_tem=0
+
+arduino_charing=2
+arduino_eco=2
+
 line_notify_arduino_status_UltraSound=True
 
 request_url="Other"
@@ -49,7 +53,7 @@ def index(request):
     return render(request, 'index.html', context)
 
 def Sign1(request):
-    global arduino_battery_num, arduino_battery_tem, waringsign_status, arduino_status_UltraSound
+    global arduino_battery_num, arduino_battery_tem, waringsign_status, arduino_status_UltraSound, arduino_charing, arduino_eco
     if request.user.is_authenticated:
         Account = request.user
     else:
@@ -65,6 +69,16 @@ def Sign1(request):
     else:
         arduino_status_UltraSound_view = False
 
+    if arduino_charing == 1:
+        arduino_charing_view = True
+    else:
+        arduino_charing_view = False
+
+    if arduino_eco == 1:
+        arduino_eco_view = True
+    else:
+        arduino_eco_view = False
+
     if output_visited:
         arduino_online = True
     else:
@@ -74,17 +88,19 @@ def Sign1(request):
         'output_status': input_visited,
         'waringsign_status': waringsign_status_view,
         'output_off_status': input_off_visited,
-        'arduino_status_UltraSound': arduino_status_UltraSound_view,
+        #'arduino_status_UltraSound': arduino_status_UltraSound_view,
         'arduino_online': arduino_online,
         'arduino_battery_num': arduino_battery_num,
-        'arduino_battery_tem': arduino_battery_tem,
+        #'arduino_battery_tem': arduino_battery_tem,
+        'arduino_charing': arduino_charing_view,
+        'arduino_eco': arduino_eco_view,
     }
     return render(request, 'sign1.html', context)
 
 
 @csrf_exempt
 def arduino_info(request):
-    global arduino_battery_num, arduino_battery_tem, waringsign_status, arduino_status_UltraSound, line_notify_arduino_status_UltraSound
+    global arduino_battery_num, arduino_battery_tem, waringsign_status, arduino_status_UltraSound, line_notify_arduino_status_UltraSound,arduino_charing, arduino_eco
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -94,9 +110,11 @@ def arduino_info(request):
                 except (ValueError, TypeError):
                     return default
             arduino_battery_num = parse_int(data.get('battery', 0))
-            arduino_battery_tem = parse_int(data.get('battery_tem', 0))
+            #arduino_battery_tem = parse_int(data.get('battery_tem', 0))
             waringsign_status_str = parse_int(data.get('waringsign_status', 2))
-            arduino_status_UltraSound_str = parse_int(data.get('UltraSound', 1))
+            #arduino_status_UltraSound_str = parse_int(data.get('UltraSound', 1))
+            arduino_charing_str = parse_int(data.get('charing', 2))
+            arduino_eco_str = parse_int(data.get('eco', 2))
             """
             print("==========================================================================")
             print("arduino_info")
@@ -106,6 +124,7 @@ def arduino_info(request):
             print(f"arduino_status_UltraSound: {arduino_status_UltraSound_str}")
             print("==========================================================================")
             """
+
             if waringsign_status_str == 1:
                 waringsign_status = 1
                 waringsign_status_input = True
@@ -115,6 +134,16 @@ def arduino_info(request):
             else:
                 waringsign_status_input = False
 
+            if arduino_charing_str == 1:
+                arduino_charing = True
+            else:
+                arduino_charing = False
+
+            if arduino_eco_str == 1:
+                arduino_eco = True
+            else:
+                arduino_eco = False
+            """
             if arduino_status_UltraSound_str == 1:
                 arduino_status_UltraSound = 1
                 line_notify_arduino_status_UltraSound = True
@@ -129,10 +158,13 @@ def arduino_info(request):
                     line_notify_arduino_status_UltraSound = False
             else:
                 arduino_status_UltraSound_input = False
-            if waringsign_status_input and arduino_status_UltraSound_input:
+            """
+
+            if waringsign_status_input:
                 return JsonResponse({"status": "success"})
             else:
                 return JsonResponse({"status": "error", "message": "Invalid data"})
+
         except json.JSONDecodeError:
             return JsonResponse({"status": "error", "message": "Invalid JSON data"})
     else:

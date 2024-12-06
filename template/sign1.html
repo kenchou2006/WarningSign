@@ -92,20 +92,23 @@
                 {%if arduino_online%}
                 <p>Arduino狀態:在線</p>
                 <p>Arduino電量:{{arduino_battery_num}}</p>
-                <p>Arduino電池溫度:{{arduino_battery_tem}}</p>
 
                     {%if waringsign_status%}
                     <p>立牌狀態:開啟</p>
                     {%else%}
                     <p>立牌狀態:關閉</p>
-
                     {%endif%}
 
-                    {%if arduino_status_UltraSound%}
-                    <p>超聲波:正常</p>
-                    <br>
+                    {%if arduino_charing%}
+                    <p>充電狀態:充電中</p>
                     {%else%}
-                    <p>超聲波:異常</p>
+                    <p>充電狀態：未充電</p>
+                    {%endif%}
+
+                    {%if arduino_eco%}
+                    <p>省電模式：是</p>
+                    {%else%}
+                    <p>省電模式：否</p>
                     {%endif%}
 
             {%else%}
