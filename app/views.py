@@ -3,14 +3,13 @@ from django.http import HttpResponseNotFound, HttpResponse ,HttpResponseRedirect
 import os
 import json
 import socket
-import psutil
-import platform
-import threading
 from django.core.cache import cache
 from app.function import handle_common_logic,record_access_time,get_client_ip,send_line_notify,output_page_line_notify
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
+
+from django.core.cache import cache
 from .models import AccessRecord
 
 input_visited=False
@@ -20,9 +19,7 @@ output_off_status=False
 arduino_online=False
 
 waringsign_status=2
-arduino_status_UltraSound=1
 arduino_battery_num=0
-arduino_battery_tem=0
 
 arduino_charing=2
 arduino_eco=2
@@ -53,7 +50,7 @@ def index(request):
     return render(request, 'index.html', context)
 
 def Sign1(request):
-    global arduino_battery_num, arduino_battery_tem, waringsign_status, arduino_status_UltraSound, arduino_charing, arduino_eco
+    global arduino_battery_num, waringsign_status, arduino_charing, arduino_eco
     if request.user.is_authenticated:
         Account = request.user
     else:
@@ -63,11 +60,6 @@ def Sign1(request):
         waringsign_status_view = True
     else:
         waringsign_status_view = False
-
-    if arduino_status_UltraSound == 1:
-        arduino_status_UltraSound_view = True
-    else:
-        arduino_status_UltraSound_view = False
 
     if arduino_charing == 1:
         arduino_charing_view = True
@@ -88,10 +80,8 @@ def Sign1(request):
         'output_status': input_visited,
         'waringsign_status': waringsign_status_view,
         'output_off_status': input_off_visited,
-        #'arduino_status_UltraSound': arduino_status_UltraSound_view,
         'arduino_online': arduino_online,
         'arduino_battery_num': arduino_battery_num,
-        #'arduino_battery_tem': arduino_battery_tem,
         'arduino_charing': arduino_charing_view,
         'arduino_eco': arduino_eco_view,
     }
@@ -100,7 +90,7 @@ def Sign1(request):
 
 @csrf_exempt
 def arduino_info(request):
-    global arduino_battery_num, arduino_battery_tem, waringsign_status, arduino_status_UltraSound, line_notify_arduino_status_UltraSound,arduino_charing, arduino_eco
+    global arduino_battery_num, waringsign_status, arduino_status_UltraSound, line_notify_arduino_status_UltraSound,arduino_charing, arduino_eco
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -110,20 +100,9 @@ def arduino_info(request):
                 except (ValueError, TypeError):
                     return default
             arduino_battery_num = parse_int(data.get('battery', 0))
-            #arduino_battery_tem = parse_int(data.get('battery_tem', 0))
             waringsign_status_str = parse_int(data.get('waringsign_status', 2))
-            #arduino_status_UltraSound_str = parse_int(data.get('UltraSound', 1))
             arduino_charing_str = parse_int(data.get('charing', 2))
             arduino_eco_str = parse_int(data.get('eco', 2))
-            """
-            print("==========================================================================")
-            print("arduino_info")
-            print(f"arduino_battery_num: {arduino_battery_num}")
-            print(f"arduino_battery_tem: {arduino_battery_tem}")
-            print(f"waringsign_status: {waringsign_status_str}")
-            print(f"arduino_status_UltraSound: {arduino_status_UltraSound_str}")
-            print("==========================================================================")
-            """
 
             if waringsign_status_str == 1:
                 waringsign_status = 1
@@ -143,22 +122,6 @@ def arduino_info(request):
                 arduino_eco = True
             else:
                 arduino_eco = False
-            """
-            if arduino_status_UltraSound_str == 1:
-                arduino_status_UltraSound = 1
-                line_notify_arduino_status_UltraSound = True
-                arduino_status_UltraSound_input = True
-                print(f"arduino_status_UltraSound: {arduino_status_UltraSound}")
-            elif arduino_status_UltraSound_str == 2:
-                arduino_status_UltraSound = 2
-                request_url = "ultrasound"
-                arduino_status_UltraSound_input = True
-                if line_notify_arduino_status_UltraSound:
-                    output_page_line_notify(request, request_url)
-                    line_notify_arduino_status_UltraSound = False
-            else:
-                arduino_status_UltraSound_input = False
-            """
 
             if waringsign_status_input:
                 return JsonResponse({"status": "success"})
@@ -175,7 +138,7 @@ def input_page(request):
         global output_status,input_visited,request_url
         request_url = "input"
         if not input_visited:
-            handle_common_logic(request,request_url)
+            handle_common_logic(request, request_url),
             if not input_visited:
                 output_status=True
                 input_visited=True
@@ -188,7 +151,8 @@ def input_page(request):
 def input_off_page(request):
     global output_off_status, input_off_visited,request_url
     request_url="inputOff"
-    handle_common_logic(request,request_url)
+    handle_common_logic(request, request_url)
+
     if not input_off_visited:
         output_off_status=True
         input_off_visited=True
@@ -197,23 +161,27 @@ def input_off_page(request):
     else:
         return HttpResponseNotFound("Error")
 
+
 def output_page(request):
-    global output_status,input_visited,request_url
+    global output_status, input_visited, request_url
     request_url = "output"
     cache.set('output_visited', True, 30)
+
     if input_visited:
-        output_status=True
-        input_visited=False
-        handle_common_logic_thread1 = threading.Thread(target=handle_common_logic, args=(request, request_url))
-        handle_common_logic_thread1.start()
-        output_page_line_notify_thread1 = threading.Thread(target=output_page_line_notify, args=(request, request_url))
-        output_page_line_notify_thread1.start()
+        output_status = True
+        input_visited = False
+        handle_common_logic(request, request_url)
+        output_page_line_notify(request, request_url)
+
     else:
-        output_status=False
+        output_status = False
+
     if output_status:
         return JsonResponse({'status': 'success'})
     else:
         return JsonResponse({'status': 'error'})
+
+
 def output_off_page(request):
     global output_off_status, input_off_visited,request_url
     request_url = "outputOff"
@@ -221,8 +189,8 @@ def output_off_page(request):
     if input_off_visited:
         output_off_status=True
         input_off_visited=False
-        output_page_line_notify(request,request_url)
-        handle_common_logic(request, request_url)
+        handle_common_logic(request, request_url),
+        output_page_line_notify(request, request_url)
     else:
         output_off_status=False
     if output_off_status:
@@ -346,7 +314,7 @@ def output_off_page2(request):
         return HttpResponseRedirect('/sign2')
     else:
         return HttpResponseNotFound("Error")
-
+"""
 def server_info(request):
     host_name=platform.node()
     os_name=platform.system()
@@ -365,7 +333,7 @@ def server_info(request):
         'total_ram':total_ram,
         'internal_ipv4':internal_ipv4,}
     return render(request,'server_info.html',context)
-
+"""
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('/')

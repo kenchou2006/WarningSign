@@ -24,7 +24,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'user_agents',
     'app',
-    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -34,7 +33,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'server.urls'
@@ -60,10 +59,10 @@ WSGI_APPLICATION = 'server.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'verceldb'),
-        'USER': os.getenv('DB_USER', 'default'),
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'NAME': os.getenv('POSTGRES_DATABASE', 'verceldb'),
+        'USER': os.getenv('POSTGRES_USER', 'default'),
+        'PASSWORD': os.environ['POSTGRES_PASSWORD'],
+        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', 5432),
         'OPTIONS': {
             'sslmode': 'require',

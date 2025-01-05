@@ -22,7 +22,7 @@ urlpatterns = [
     path('output2/off/', views.output_off_page2),
     path('arduino_info2/',views.arduino_info2),
     #ServerView
-    path('serverinfo/',views.server_info),
+    #path('serverinfo/',views.server_info),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('access-records/', views.access_record_list, name='access_record_list'),
