@@ -9,7 +9,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ['SECRET_KEY']
 
 LINE_NOTIFY_TOKEN = os.getenv('LINE_NOTIFY_TOKEN')
-SMTP_PASSWORD= os.getenv('SMTP_PASSWORD')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
