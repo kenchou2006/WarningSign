@@ -13,13 +13,14 @@ def output_page_line_notify(request,request_url):
     minute=access_time.minute
     second=access_time.second
     if request_url=="output":
-        send_line_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 開啟")
+        send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 開啟")
     elif request_url=="outputOff":
-        send_line_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 關閉")
+        send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 關閉")
     else:
         print("output_page_line_notify Error")
-
-def send_line_notify(message):
+#LINE Notify
+"""
+def send_notify(message):
     line_notify_token = settings.LINE_NOTIFY_TOKEN
     url="https://notify-api.line.me/api/notify"
     headers={"Authorization": f"Bearer {line_notify_token}"}
@@ -29,6 +30,20 @@ def send_line_notify(message):
         print("Send Line Notify Success")
     else:
         print("Send Line Notify Error")
+"""
+
+
+def send_notify(message):
+    bot_token = settings.TELEGRAM_BOT_TOKEN
+    chat_id = settings.TELEGRAM_CHAT_ID
+    url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
+    payload = {
+        'chat_id': chat_id,
+        'text': message
+    }
+    response = requests.post(url, data=payload)
+    return response.json()
+
 
 def handle_common_logic(request,request_urls):
     user_agent = request.META.get('HTTP_USER_AGENT', '')

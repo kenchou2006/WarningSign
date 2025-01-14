@@ -8,7 +8,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
-LINE_NOTIFY_TOKEN = os.getenv('LINE_NOTIFY_TOKEN')
+#LINE_NOTIFY_TOKEN = os.getenv('LINE_NOTIFY_TOKEN')
+
+TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
+TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 

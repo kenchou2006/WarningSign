@@ -4,7 +4,7 @@ import os
 import json
 import socket
 from django.core.cache import cache
-from app.function import handle_common_logic,record_access_time,get_client_ip,send_line_notify,output_page_line_notify
+from app.function import handle_common_logic,record_access_time,get_client_ip,output_page_line_notify
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
