@@ -1,4 +1,5 @@
-import requests
+import asyncio
+from telegram import Bot
 from datetime import datetime
 from user_agents import parse
 from django.conf import settings
@@ -13,11 +14,11 @@ def output_page_line_notify(request,request_url):
     minute=access_time.minute
     second=access_time.second
     if request_url=="output":
-        send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 開啟")
+        asyncio.run(send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 開啟"))
     elif request_url=="outputOff":
-        send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 關閉")
+        asyncio.run(send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 關閉"))
     else:
-        print("output_page_line_notify Error")
+        print("Send Notify Error")
 #LINE Notify
 """
 def send_notify(message):
@@ -31,8 +32,8 @@ def send_notify(message):
     else:
         print("Send Line Notify Error")
 """
-
-
+#Telegram Notify BY requests package
+"""
 def send_notify(message):
     bot_token = settings.TELEGRAM_BOT_TOKEN
     chat_id = settings.TELEGRAM_CHAT_ID
@@ -43,7 +44,13 @@ def send_notify(message):
     }
     response = requests.post(url, data=payload)
     return response.json()
+"""
 
+async def send_notify(message):
+    bot_token = settings.TELEGRAM_BOT_TOKEN
+    chat_id = settings.TELEGRAM_CHAT_ID
+    bot = Bot(token=bot_token)
+    await bot.send_message(chat_id=chat_id, text=message)
 
 def handle_common_logic(request,request_urls):
     user_agent = request.META.get('HTTP_USER_AGENT', '')
