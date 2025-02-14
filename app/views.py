@@ -3,12 +3,12 @@ from django.http import HttpResponseNotFound, HttpResponse ,HttpResponseRedirect
 import os
 import json
 import socket
+import asyncio
 from django.core.cache import cache
-from app.function import handle_common_logic,record_access_time,get_client_ip,output_page_line_notify
+from app.function import handle_common_logic,record_access_time,get_client_ip,output_page_line_notify,send_notify
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
-
 from django.core.cache import cache
 from .models import AccessRecord
 
@@ -25,6 +25,7 @@ arduino_charing=2
 arduino_eco=2
 
 line_notify_arduino_status_UltraSound=True
+notify_battery=True
 
 request_url="Other"
 
@@ -90,7 +91,7 @@ def Sign1(request):
 
 @csrf_exempt
 def arduino_info(request):
-    global arduino_battery_num, waringsign_status, arduino_status_UltraSound, line_notify_arduino_status_UltraSound,arduino_charing, arduino_eco
+    global arduino_battery_num, waringsign_status, arduino_status_UltraSound, line_notify_arduino_status_UltraSound,arduino_charing, arduino_eco, notify_battery
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -123,6 +124,12 @@ def arduino_info(request):
             else:
                 arduino_eco = False
 
+            if arduino_battery_num <= 20 and notify_battery:
+                notify_battery = False
+                asyncio.run(send_notify("電量低於 20，請檢查狀態"))
+            elif not arduino_battery_num <= 20:
+                notify_battery = True
+
             if waringsign_status_input:
                 return JsonResponse({"status": "success"})
             else:
@@ -132,6 +139,36 @@ def arduino_info(request):
             return JsonResponse({"status": "error", "message": "Invalid JSON data"})
     else:
         return JsonResponse({"status": "error", "message": "Invalid method"})
+
+def cleanCache(request):
+    global arduino_battery_num, waringsign_status, line_notify_arduino_status_UltraSound, arduino_charing, arduino_eco, notify_battery,input_visited,input_off_visited,output_status,output_off_status,arduino_online,arduino_battery_num,request_url
+    global input_visited2,input_off_visited2,output_status2,output_off_status2,waringsign_status2,arduino_online2,arduino_status_UltraSound2,arduino_battery_num2,arduino_battery_tem2,line_notify_arduino_status_UltraSound2
+    if request.user.is_authenticated:
+        input_visited = False
+        input_off_visited = False
+        output_status = False
+        output_off_status = False
+        arduino_online = False
+        waringsign_status = 2
+        arduino_battery_num = 0
+        arduino_charing = 2
+        arduino_eco = 2
+        line_notify_arduino_status_UltraSound = True
+        notify_battery = True
+        request_url = "Other"
+        input_visited2 = False
+        input_off_visited2 = False
+        output_status2 = False
+        output_off_status2 = False
+        waringsign_status2 = False
+        arduino_online2 = False
+        arduino_status_UltraSound2 = True
+        arduino_battery_num2 = 0
+        arduino_battery_tem2 = 0
+        line_notify_arduino_status_UltraSound2 = True
+        return HttpResponseRedirect('/sign1')
+    else:
+        return HttpResponseRedirect('/')
 
 def input_page(request):
     if request.user.is_authenticated:
