@@ -83,7 +83,7 @@
                 <button class="button" onclick="location.href='/access-records/'">檢視Log</button>
             </div>
             <div class="status">
-                {%if output_status%}
+                {% if output_status or output_off_status %}
                     <p>伺服器狀態:待接收</p>
                 {%else%}
                     <p>伺服器狀態: 無請求</p>
