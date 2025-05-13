@@ -170,20 +170,21 @@ def cleanCache(request):
     else:
         return HttpResponseRedirect('/')
 
+
 def input_page(request):
-    if request.user.is_authenticated:
-        global output_status,input_visited,request_url
-        request_url = "input"
+    global output_status, input_visited, request_url
+    request_url = "input"
+    if not input_visited:
+        handle_common_logic(request, request_url),
         if not input_visited:
-            handle_common_logic(request, request_url),
-            if not input_visited:
-                output_status=True
-                input_visited=True
+            output_status = True
+            input_visited = True
+        if request.user.is_authenticated:
             return HttpResponseRedirect('/sign1')
         else:
-            return HttpResponseNotFound("Error")
+            return JsonResponse({'status': 'success'})
     else:
-        return HttpResponseRedirect('/')
+        return JsonResponse({'status': 'error'})
 
 def input_off_page(request):
     global output_off_status, input_off_visited,request_url
