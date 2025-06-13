@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Message</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="message" value="{{ message }}" placeholder="Enter your message" required>
+        <button type="submit">Save</button>
+    </form>
+    <p>Current message: {{ message }}</p>
+</body>
+</html>
