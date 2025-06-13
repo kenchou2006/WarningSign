@@ -1,3 +1,5 @@
 from django.db import models
 
-# Create your models here.
+class GlobalMessage(models.Model):
+    content = models.TextField()
+    updated_at = models.DateTimeField(auto_now=True)
