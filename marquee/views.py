@@ -78,15 +78,12 @@ def input_message(request):
 
 def get_message_json(request):
     global DISPLAY_MESSAGE, AUTO_MESSAGE, SIGNON_MESSAGE, SIGNOFF_MESSAGE, SIGN_MODE
-    waringsign_status = get_waringsign_status()
-    print("=======================================")
-    print("waringsign_status:", waringsign_status)
-    print("========================================")
     if not DISPLAY_MESSAGE:
         load_message_from_db()
     if not AUTO_MESSAGE:
         response = JsonResponse({"message": DISPLAY_MESSAGE})
     else:
+        waringsign_status = get_waringsign_status()
         if waringsign_status == 1:
             response = JsonResponse({"message": SIGNON_MESSAGE})
         elif waringsign_status == 2:
@@ -95,5 +92,3 @@ def get_message_json(request):
             response = JsonResponse({"message": DISPLAY_MESSAGE})
     response["Access-Control-Allow-Origin"] = "*"
     return response
-
-load_message_from_db()
