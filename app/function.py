@@ -1,4 +1,4 @@
-import asyncio
+#import asyncio
 from telegram import Bot
 from datetime import datetime
 from user_agents import parse
@@ -13,12 +13,14 @@ def output_page_line_notify(request,request_url):
     hour=access_time.hour
     minute=access_time.minute
     second=access_time.second
+    """
     if request_url=="output":
         asyncio.run(send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 開啟"))
     elif request_url=="outputOff":
         asyncio.run(send_notify(f"已於 {year}/{month}/{day} {hour}:{minute}:{second} 關閉"))
     else:
         print("Send Notify Error")
+    """
 #LINE Notify
 """
 def send_notify(message):

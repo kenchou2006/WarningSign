@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marquee Setting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu {
+            margin-top: 20px;
+        }
+
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .login-link {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .login-link:hover {
+            background-color: #0056b3;
+        }
+        .auto-btn {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .auto-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">跑馬燈設定</h1>
+        {% if request.user.is_authenticated %}
+            <div class="menu">
+                <a href="/marquee/input/" class="login-link">跑馬燈訊息 </a>
+            </div>
+            <br>
+            <div class="menu">
+                {% if auto_message %}
+                    <span style="color:green;font-weight:bold;">自動模式：開啟</span>
+                    <br>
+                    <a href="/marquee/auto_off/" class="auto-btn">關閉自動模式</a>
+                {% else %}
+                    <span style="color:red;font-weight:bold;">自動模式：關閉</span>
+                    <br>
+                    <a href="/marquee/auto_on/" class="auto-btn">開啟自動模式</a>
+                {% endif %}
+            </div>
+            <br>
+            {% if auto_message %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="menu">
+                    <label>SignOnMessage:</label><br>
+                    <textarea name="signon_content" rows="2" cols="40">{% if signon %}{{ signon.content }}{% endif %}</textarea>
+                </div>
+                <div class="menu">
+                    <label>SignOffMessage:</label><br>
+                    <textarea name="signoff_content" rows="2" cols="40">{% if signoff %}{{ signoff.content }}{% endif %}</textarea>
+                </div>
+                <button type="submit" class="auto-btn">儲存訊息</button>
+            </form>
+            {% endif %}
+        {% else %}
+            <p>您尚未登入。</p>
+            <a href="/login/" class="login-link">會員登入</a>
+        {% endif %}
+    </div>
+</body>
+</html>

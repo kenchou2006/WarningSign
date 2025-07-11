@@ -3,7 +3,7 @@ from django.http import HttpResponseNotFound, HttpResponse ,HttpResponseRedirect
 import os
 import json
 import socket
-import asyncio
+#import asyncio
 from django.core.cache import cache
 from app.function import handle_common_logic,record_access_time,get_client_ip,output_page_line_notify,send_notify
 from django.views.decorators.csrf import csrf_exempt
@@ -126,7 +126,7 @@ def arduino_info(request):
 
             if arduino_battery_num <= 20 and notify_battery:
                 notify_battery = False
-                asyncio.run(send_notify("電量低於 20，請檢查狀態"))
+                #asyncio.run(send_notify("電量低於 20，請檢查狀態"))
             elif not arduino_battery_num <= 20:
                 notify_battery = True
 
@@ -195,7 +195,10 @@ def input_off_page(request):
         output_off_status=True
         input_off_visited=True
         output_page_line_notify(request, request_url)
-        return HttpResponseRedirect('/sign1')
+        if request.user.is_authenticated:
+            return HttpResponseRedirect('/sign1')
+        else:
+            return JsonResponse({'status': 'success'})
     else:
         return HttpResponseNotFound("Error")
 
@@ -383,7 +386,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Login successful.')
-            return redirect('/')  # 'home'是你的首页URL名称
+            return redirect('/')
         else:
             messages.error(request, 'Invalid login credentials.')
     return render(request, 'login.html')
@@ -408,3 +411,7 @@ def clear_access_records(request):
         return redirect('access_record_list')
     else:
         return redirect('/')
+
+def get_waringsign_status():
+    global waringsign_status
+    return waringsign_status
